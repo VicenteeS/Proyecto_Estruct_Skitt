@@ -33,7 +33,7 @@ typedef struct {
   char nivel_exp[50];
 } Ejercicio;
 
-void mostrar_Mapa(HashMap*);
+void mostrar_Mapa(HashMap*, char*);
 int lower_than_string(void *, void *);
 void mostrarMenu();
 void cargar_Ejercicios(FILE *, HashMap *, HashMap *);
@@ -42,7 +42,7 @@ HashMap *cargardatoscsv(FILE *, HashMap*);
 Persona *toma_Datos_Personales(char *, Persona *);
 char *quitarSalto(char *linea);
 Persona *mostrar_menu_bienvenida(FILE *, HashMap *);
-void buscar_ejercicios(HashMap *, HashMap *);
+void buscar_ejercicios(HashMap *, HashMap *, Persona *);
 
 int main() {
   char nombre[50], edad[50], altura[50], peso[50], nivel_exp[50], G_mus[50],
@@ -58,11 +58,11 @@ int main() {
   // TreeMap *Rutina_fav = createTreeMap(lower_than_string);
   Persona *p = (Persona*)malloc(sizeof(Persona));
   cargar_Ejercicios(file, mapaTSup, mapaTInf);
-  //users = cargardatoscsv(file, users);
+  users = cargardatoscsv(file, users);
   
-  //p = mostrar_menu_bienvenida(file, users);
+  p = mostrar_menu_bienvenida(file, users);
   
-  //p = toma_Datos_Personales(nombre, p);
+  p = toma_Datos_Personales(nombre, p);
   
   
 
@@ -79,13 +79,13 @@ int main() {
 
     switch (opcion) {
     case (1):
-      mostrar_Mapa(mapaTInf);
+      //mostrar_Mapa(mapaTInf);
       break;
     case (2):
 
       break;
     case (3):
-      buscar_ejercicios(mapaTSup, mapaTInf);
+      buscar_ejercicios(mapaTSup, mapaTInf, p);
       break;
     case (4):
       break;
@@ -100,14 +100,14 @@ int main() {
 }
 
 void mostrarMenu() {
-  printf("Seleccione la opciÃ³n que desea: \n");
+  printf("Seleccione la opción que desea: \n");
   printf("1. Generar rutina\n");
   printf("2. Mostrar rutinas favoritas\n");
   printf("3. Buscar ejercicios\n");
   printf("4. Ver rutinas recomendadas\n");
   printf("5. Ver el perfil de otro usuario\n");
   printf("6. Editar su perfil\n");
-  printf("0. Salir de la aplicaciÃ³n\n");
+  printf("0. Salir de la aplicación\n");
 }
 
 void cargar_Ejercicios(FILE *file, HashMap *mapaTSup, HashMap *mapaTInf) 
@@ -310,8 +310,9 @@ Persona *mostrar_menu_bienvenida(FILE *file, HashMap *users) {
   }
 }
 
-void buscar_ejercicios(HashMap *mapaTSup, HashMap *mapaTInf) {
-  char gM[50], nivel[50];
+void buscar_ejercicios(HashMap *mapaTSup, HashMap *mapaTInf, Persona *p) {
+  int entero;
+  char gM[50];
   Pair *auxPair;
   List *auxList;
   Ejercicio *e;
@@ -320,55 +321,62 @@ void buscar_ejercicios(HashMap *mapaTSup, HashMap *mapaTInf) {
   fflush(stdin);
   fgets(gM, 50, stdin);
   strcpy(gM, quitarSalto(gM));
+  //Corroborar los datos 
 
-  printf("Por favor, Ingrese un nivel de experiencia\n");
+  /*printf("Por favor, Ingrese un nivel de experiencia\n");
   printf("Principiante: 0\nIntermedio: 1\nAvanzado: 2\n");
   fflush(stdin);
   fgets(nivel, 50, stdin);
-  strcpy(nivel, quitarSalto(nivel));
+  strcpy(nivel, quitarSalto(nivel));*/
 
-  if(strcmp(nivel, "0") == 0)
+  /*if(strcmp(p->nivel_exp, "0") == 0)
   {
-    strcpy(nivel, "rincipiante");
+    
+    
+    //strcpy(p->nivel_exp,"Principiante");
+    
   }
-  if(strcmp(nivel, "1") == 0)
+  if(strcmp(p->nivel_exp, "1") == 0)
   {
-    strcpy(nivel, "ntermedio");
+    strcpy(p->nivel_exp,"Intermedio");
   }
-  if(strcmp(nivel, "2") == 0)
+  if(strcmp(p->nivel_exp, "2") == 0)
   {
-    strcpy(nivel, "vanzado");
-  }
-
+    strcpy(p->nivel_exp,"Avanzado");
+  }*/
+  
   if (strcmp(gM, "1") == 0) {
-    printf("\na!!!!!!!\n");
-    auxPair = searchMap(mapaTSup, nivel);
+    /*printf("\na!!!!!!!\n");
+    auxPair = searchMap(mapaTSup,nivel);
     if (auxPair != NULL) 
     {
       auxList = auxPair->value;
-      printf("\nb!!!!!!!\n");
+      printf("b!!!!!!!\n");
       for (e = firstList(auxList); e != NULL; e = nextList(auxList)) 
       {
         printf("nombre: %s\n", e->nombre);
         printf("link: %s\n\n", e->link);
       }
-    }
+    }*/
+    mostrar_Mapa(mapaTSup, p->nivel_exp);
   } 
   else 
   {
-    auxPair = searchMap(mapaTInf, nivel);
+    /*
+    auxPair = searchMap(mapaTInf,nivel);
     printf("\nb!!!!!!!\n");
     
     if (auxPair != NULL) 
     {
       auxList = auxPair->value;
-      printf("\na!!!!!!!\n");
+      printf("a!!!!!!!\n");
       for (e = firstList(auxList); e != NULL; e = nextList(auxList)) 
       {
         printf("nombre: %s\n", e->nombre);
         printf("link: %s\n\n", e->link);
       }
-    }
+    }*/
+    mostrar_Mapa(mapaTInf, p->nivel_exp);
   }
 }
 int lower_than_string(void *key1, void *key2) {
@@ -414,27 +422,39 @@ void *get_csv_field(char *tmp, int k) {
   return NULL;
 }
 
-void mostrar_Mapa(HashMap* mapa)
+void mostrar_Mapa(HashMap* mapa, char* nivel)
 {
-  char o[50];
-  Pair *aux, *auxPair;
+  
+  Pair *aux;
   List *lista;
   Ejercicio *e;
+  //printf("NIVEL: %s\n", nivel);
   for(aux = firstMap(mapa); aux != NULL; aux = nextMap(mapa))
   {
     lista = aux->value;
     for(e = firstList(lista); e != NULL; e = nextList(lista))
     {
-      //printf("%s\n",e->nivel_exp);
-      printf(" %s: %s \n",  e->nombre,aux->key);
-      strcpy(o, aux->key);
+      printf("Nombre: %s\n", e->nombre);
+      printf("Nivel de Experiencia: %s\n", e->nivel_exp);
+      printf("Link: %s\n\n\n", e->link);
     }
   }
-  auxPair = searchMap(mapa, o);
-  if (auxPair != NULL) 
+  /*printf("Ingresa un nivel de experiencia: \n");
+  fgets( nivel, 30, stdin);
+  strcpy(nivel, quitarSalto(nivel));
+
+  aux = searchMap(mapa, nivel);
+  if(aux != NULL)
   {
-    printf(" %s ",o);
-    printf("\nb!!!!!!!\n");
-  }
+    lista = aux->value;
+    for(e = firstList(lista); e != NULL; e = nextList(lista))
+    {
+      printf("nombre: %s\n", e->nombre);
+      printf("Nivel de Experiencia: %s\n", e->nivel_exp);
+      printf("link: %s\n\n", e->link);
+    }
+  }*/
+  
+  
   return;
 }
