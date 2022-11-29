@@ -20,7 +20,6 @@ typedef struct {
 typedef struct {
   char nombre[50];
   char G_mus[50];
-  char espacio[50];
   char tiempo[50];
   char nivel_exp[50];
   List *L_ejercicios;
@@ -43,6 +42,10 @@ Persona *toma_Datos_Personales(char *, Persona *);
 char *quitarSalto(char *linea);
 Persona *mostrar_menu_bienvenida(FILE *, HashMap *);
 void buscar_ejercicios(HashMap *, HashMap *, Persona *);
+void editar_perfil(Persona *);
+void Mostrar_rutinas_fav (Persona *);
+
+
 
 int main() {
   char nombre[50], edad[50], altura[50], peso[50], nivel_exp[50], G_mus[50],
@@ -90,12 +93,10 @@ int main() {
     case (4):
       break;
     case (5):
-      break;
-    case (6):
+      editar_perfil(p);
       break;
     }
   }
-
   return 0;
 }
 
@@ -105,8 +106,7 @@ void mostrarMenu() {
   printf("2. Mostrar rutinas favoritas\n");
   printf("3. Buscar ejercicios\n");
   printf("4. Ver rutinas recomendadas\n");
-  printf("5. Ver el perfil de otro usuario\n");
-  printf("6. Editar su perfil\n");
+  printf("5. Editar su perfil\n");
   printf("0. Salir de la aplicación\n");
 }
 
@@ -163,14 +163,10 @@ void cargar_Ejercicios(FILE *file, HashMap *mapaTSup, HashMap *mapaTInf)
         strcpy(e->nivel_exp, nivel_exp);
         strcpy(e->nombre, nombre);
         strcpy(e->link, link);
-        
-
-        
         if (strcmp(e->G_mus, "Tren inferior") == 0) {
           if (searchMap(mapaTInf, e->nivel_exp) == NULL) {
             listEj = createList();
             pushFront(listEj, e);
-
             insertMap(mapaTInf, e->nivel_exp, listEj);
           } 
           else 
@@ -186,14 +182,12 @@ void cargar_Ejercicios(FILE *file, HashMap *mapaTSup, HashMap *mapaTInf)
           if (searchMap(mapaTSup, e->nivel_exp) == NULL) {
             listEj = createList();
             pushFront(listEj, e);
-
             insertMap(mapaTSup, e->nivel_exp, listEj);
           } 
           else 
           {
             auxPair = searchMap(mapaTSup, e->nivel_exp);
             auxList = auxPair->value;
-
             pushFront(auxList, e);
             auxPair->value = auxList;
           }
@@ -207,7 +201,6 @@ void cargar_Ejercicios(FILE *file, HashMap *mapaTSup, HashMap *mapaTInf)
   }
 }
 HashMap *cargardatoscsv(FILE *file, HashMap* usuarios) {
-
   file = fopen("cargardatos.csv", "r");
   Persona *e = (Persona *)malloc(sizeof(Persona));
   void *auxi;
@@ -215,9 +208,7 @@ HashMap *cargardatoscsv(FILE *file, HashMap* usuarios) {
   char line[1024];
   int l, contador;
   contador = 0;
-
   fgets(line, 1023, file);
-
   while (fgets(line, 1023, file) != NULL) {
     for (l = 0; l < 5; l++) {
       auxi = get_csv_field(line, l);
@@ -260,25 +251,67 @@ char *quitarSalto(char *linea) {
   }
   return (linea);
 }
-
 Persona *toma_Datos_Personales(char *nombre, Persona *p) {
-  printf("Ingrese edad: ");
-  fgets(p->edad, 30, stdin);
-  strcpy(p->edad, quitarSalto(p->edad));
-
-  printf("Ingrese peso: ");
-  fgets(p->peso, 30, stdin);
-  strcpy(p->peso, quitarSalto(p->peso));
-
-  printf("Ingrese altura: ");
-  fgets(p->altura, 30, stdin);
-  strcpy(p->altura, quitarSalto(p->altura));
-
-  printf("Ingrese nivel de experiencia: \n ");
-  printf("Tienes 3 opciones\nPrincipiante: 0 - Intermedio: 1 - Avanzado: 2\n");
-  fgets(p->nivel_exp, 30, stdin);
-  strcpy(p->nivel_exp, quitarSalto(p->nivel_exp));
-
+  int entero;
+  int cont = 0;
+  do{
+    if(cont > 0)
+    {
+      printf("Ingrese edad en el rango solicitado :");
+    }
+    else
+    {
+      printf("Ingrese edad (entre 15 a 60 años): ");
+    } 
+    fgets(p->edad, 30, stdin);
+    strcpy(p->edad, quitarSalto(p->edad));
+    entero = (int) strtol(p->edad, NULL, 10);
+    cont++;
+  }while (entero <= 15 && entero >=60);
+  cont = 0;
+  do{
+    if (cont > 0)
+    {
+      printf("Ingrese peso en el rango soliticado :");
+    }
+    else
+    {
+      printf("Ingrese peso (entre 15 a 200 kg): ");
+    }
+    fgets(p->peso, 30, stdin);
+    strcpy(p->peso, quitarSalto(p->peso));
+    entero = (int) strtol(p->peso, NULL, 10);
+  }while(entero <=15 && entero>=200); 
+  cont = 0;
+  do{
+    if (cont > 0)
+    {
+      printf("Ingrese altura en el rango solicitado :");
+    }
+    else
+    {
+      printf("Ingrese altura (entre 1 a 2 metros): ");
+    }
+    fgets(p->altura, 30, stdin);
+    strcpy(p->altura, quitarSalto(p->altura));
+    entero = (int) strtol(p->altura, NULL, 10);
+  }while(entero <=1 && entero >=2);
+  cont = 0;
+  do{
+    if (cont > 0)
+    {
+      printf("Ingrese una de las opciones correctas");
+    }
+    else
+    {
+      printf("Ingrese nivel de experiencia: \n ");
+      printf("Tienes 3 opciones\nPrincipiante: 0 - Intermedio: 1 - Avanzado: 2\n");
+    }
+    fgets(p->nivel_exp, 30, stdin);
+    strcpy(p->nivel_exp, quitarSalto(p->nivel_exp));
+    entero = (int) strtol(p->nivel_exp, NULL, 10);
+  }while(entero <= 0 && entero >=2 );
+  
   return (p);
 }
 
@@ -287,7 +320,7 @@ Persona *mostrar_menu_bienvenida(FILE *file, HashMap *users) {
   Pair *aux;
   
   printf("BIENVENIDO A WORKOUT AT HOME\n\n");
-  printf("Por favor, Ingrese nombre: ");
+  printf("Por favor, Ingrese nombre de usuario :");
   fgets(p->nombre, 30, stdin);
   strcpy(p->nombre, quitarSalto(p->nombre));
   
@@ -301,7 +334,7 @@ Persona *mostrar_menu_bienvenida(FILE *file, HashMap *users) {
     fprintf(file, "%s,", p->nombre);
 
     fclose(file);
-    printf("TU USUARIO HA SIDO CREADO!!!\n\nA ENTRENAR!!!\n'");
+    printf("TU USUARIO HA SIDO CREADO!!!\n\nA ENTRENAR!!!\n");
     insertMap(users, p->nombre, p);
     return (p);
   } else {
@@ -458,3 +491,4 @@ void mostrar_Mapa(HashMap* mapa, char* nivel)
   
   return;
 }
+
