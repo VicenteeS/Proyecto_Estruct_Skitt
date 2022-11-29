@@ -44,6 +44,8 @@ Persona *mostrar_menu_bienvenida(FILE *, HashMap *);
 void buscar_ejercicios(HashMap *, HashMap *, Persona *);
 void editar_perfil(Persona *);
 void Mostrar_rutinas_fav (Persona *);
+void Recomienda_rutinas (Persona *, FILE*);
+
 
 
 
@@ -80,19 +82,20 @@ int main() {
       printf("\n");
     } while (opcion > 6 && opcion < 1);
 
-    switch (opcion) {
-    case (1):
-      //mostrar_Mapa(mapaTInf);
+    switch (opcion) 
+    {
+    
+      case (1):
       break;
-    case (2):
-
+      case (2):
+      Mostrar_rutinas_fav(p);
       break;
-    case (3):
+      case (3):
       buscar_ejercicios(mapaTSup, mapaTInf, p);
       break;
-    case (4):
+      case (4):
       break;
-    case (5):
+      case (5):
       editar_perfil(p);
       break;
     }
@@ -492,3 +495,90 @@ void mostrar_Mapa(HashMap* mapa, char* nivel)
   return;
 }
 
+void editar_perfil(Persona *p)
+{
+  int opcion, cont, entero;
+  do
+  {
+    printf("Editor de Datos del Perfil:\n");
+    printf("Ingrese el numero de una de las opciones disponibles:\n");
+    printf("1. Edad \n2. Peso \n3. Altura \n4.Nivel de Experiencia \n0. Salir\n");
+
+    fflush(stdin);
+    scanf("%i", &opcion);
+    getchar();
+    printf("\n");
+    
+    switch(opcion)
+    {
+      case(0):
+      break;
+      case(1):
+        do{
+          if(cont > 0)
+          {
+            printf("Ingrese edad en el rango solicitado :");
+          }
+          else
+          {
+            printf("Ingrese edad (entre 15 a 60 años): ");
+          } 
+          fgets(p->edad, 30, stdin);
+          strcpy(p->edad, quitarSalto(p->edad));
+          entero = (int) strtol(p->edad, NULL, 10);
+          cont++;
+        }while (entero <= 15 && entero >=60);
+        cont = 0;
+      break;
+      case(2):
+        do{
+          if (cont > 0)
+          {
+            printf("Ingrese peso en el rango soliticado :");
+          }
+          else
+          {
+            printf("Ingrese peso (entre 15 a 200 kg): ");
+          }
+          fgets(p->peso, 30, stdin);
+          strcpy(p->peso, quitarSalto(p->peso));
+          entero = (int) strtol(p->peso, NULL, 10);
+        }while(entero <=15 && entero>=200); 
+        cont = 0;
+      break;
+      case(3):
+        do{
+          if (cont > 0)
+          {
+            printf("Ingrese altura en el rango solicitado :");
+          }
+          else
+          {
+            printf("Ingrese altura (entre 1 a 2 metros): ");
+          }
+          fgets(p->altura, 30, stdin);
+          strcpy(p->altura, quitarSalto(p->altura));
+          entero = (int) strtol(p->altura, NULL, 10);
+        }while(entero <=1 && entero >=2);
+        cont = 0;
+      break;
+      case(4):
+        do{
+          if (cont > 0)
+          {
+            printf("Ingrese una de las opciones correctas");
+          }
+          else
+          {
+            printf("Ingrese nivel de experiencia: \n ");
+            printf("Tienes 3 opciones\nPrincipiante: 0 - Intermedio: 1 - Avanzado: 2\n");
+          }
+          fgets(p->nivel_exp, 30, stdin);
+          strcpy(p->nivel_exp, quitarSalto(p->nivel_exp));
+          entero = (int) strtol(p->nivel_exp, NULL, 10);
+          }while(entero <=0 && entero >=2);
+      break;
+    }
+  }while(opcion != 0);
+  
+}
